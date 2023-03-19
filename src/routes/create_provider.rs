@@ -10,5 +10,7 @@ pub async fn create_provider(Extension(database): Extension<DatabaseConnection>)
         ..Default::default()
      };
 
-     let _result = new_provider.save(&database).await.unwrap();
+     let result = new_provider.save(&database).await.unwrap();
+
+     dbg!(result);
 }

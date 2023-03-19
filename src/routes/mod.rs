@@ -13,6 +13,7 @@ mod validate_with_serde;
 mod create_provider;
 mod custom_provider_extractor;
 mod custom_patient_extractor;
+mod get_provider;
 
 use axum::{
     routing::{get, post},
@@ -35,6 +36,7 @@ use validate_with_serde::validate_with_serde;
 use create_provider::create_provider;
 use custom_provider_extractor::custom_provider_extractor;
 use custom_patient_extractor::custom_patient_extractor;
+use get_provider::{get_provider, get_all_providers};
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -67,5 +69,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/create_provider", post(create_provider))
         .route("/custom_provider_extractor", get(custom_provider_extractor))
         .route("/custom_patient_extractor", get(custom_patient_extractor))
+        .route("/get_providers", get(get_all_providers))
+        .route("/get_provider/:provider_id", get(get_provider))
         .layer(Extension(database))
 }
