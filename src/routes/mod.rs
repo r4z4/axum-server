@@ -10,6 +10,9 @@ mod always_errors;
 mod returns_201;
 mod get_json;
 mod validate_with_serde;
+mod create_provider;
+mod custom_provider_extractor;
+mod custom_patient_extractor;
 
 use axum::{
     routing::{get, post},
@@ -22,19 +25,23 @@ use path_var::path_var;
 use query_params::query_params;
 use mirror_user_agent::mirror_user_agent;
 use mirror_custom_header::mirror_custom_header;
+use sea_orm::{DatabaseConnection};
 use tower_http::cors::{Any, CorsLayer};
 use middleware_message::middleware_message;
 use always_errors::always_errors;
 use returns_201::returns_201;
 use get_json::get_json;
 use validate_with_serde::validate_with_serde;
+use create_provider::create_provider;
+use custom_provider_extractor::custom_provider_extractor;
+use custom_patient_extractor::custom_patient_extractor;
 
 #[derive(Clone)]
 pub struct SharedData {
     pub message: String
 }
 
-pub fn create_routes() -> Router<(), Body> {
+pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any);
@@ -57,4 +64,8 @@ pub fn create_routes() -> Router<(), Body> {
         .route("/returns_201", post(returns_201))
         .route("/get_json", post(get_json))
         .route("/validate_with_serde", post(validate_with_serde))
+        .route("/create_provider", post(create_provider))
+        .route("/custom_provider_extractor", get(custom_provider_extractor))
+        .route("/custom_patient_extractor", get(custom_patient_extractor))
+        .layer(Extension(database))
 }
