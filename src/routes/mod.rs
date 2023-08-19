@@ -11,9 +11,11 @@ mod returns_201;
 mod get_json;
 mod validate_with_serde;
 mod create_provider;
+mod create_patient;
 mod custom_provider_extractor;
 mod custom_patient_extractor;
 mod get_provider;
+mod get_patient;
 
 use axum::{
     routing::{get, post},
@@ -34,9 +36,11 @@ use returns_201::returns_201;
 use get_json::get_json;
 use validate_with_serde::validate_with_serde;
 use create_provider::create_provider;
+use create_patient::create_patient;
 use custom_provider_extractor::custom_provider_extractor;
 use custom_patient_extractor::custom_patient_extractor;
 use get_provider::{get_provider, get_all_providers};
+use get_patient::{get_patient, get_all_patients};
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -68,8 +72,11 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/validate_with_serde", post(validate_with_serde))
         .route("/create_provider", post(create_provider))
         .route("/custom_provider_extractor", get(custom_provider_extractor))
+        .route("/create_patient", post(create_patient))
         .route("/custom_patient_extractor", get(custom_patient_extractor))
         .route("/get_providers", get(get_all_providers))
         .route("/get_provider/:provider_id", get(get_provider))
+        .route("/get_patients", get(get_all_patients))
+        .route("/get_patient/:patient_id", get(get_patient))
         .layer(Extension(database))
 }

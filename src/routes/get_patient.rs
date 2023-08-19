@@ -12,8 +12,7 @@ pub struct ResponsePatient {
     patient_id: i32,
     patient_f_name: String,
     patient_l_name: String,
-    patient_phone: Option<String>
-    patient_email: Option<String>
+    patient_email: Option<String>,
 }
 
 pub async fn get_patient(
@@ -29,8 +28,7 @@ pub async fn get_patient(
         Ok(Json(ResponsePatient {
             patient_id: patient.patient_id,
             patient_f_name: patient.patient_f_name,
-            patient_f_name: patient.patient_l_name,
-            patient_phone: patient.patient_phone,
+            patient_l_name: patient.patient_l_name,
             patient_email: patient.patient_email,
         }))
     } else {
@@ -50,7 +48,6 @@ pub async fn get_all_patients(Extension(database): Extension<DatabaseConnection>
             patient_id: db_patient.patient_id,
             patient_f_name: db_patient.patient_f_name,
             patient_l_name: db_patient.patient_l_name,
-            patient_phone: db_patient.patient_phone,
             patient_email: db_patient.patient_email,
         })
         .collect();

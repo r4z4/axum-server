@@ -7,28 +7,32 @@ use serde_json::{json, Value};
 use axum::extract::Path;
 
 #[tokio::test]
-async fn providers_get() -> Result<()> {
+async fn patients_get() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    hc.do_get("/get_providers").await?.print().await?;
+    hc.do_get("/get_patients").await?.print().await?;
+
+    Ok(())
+}
+
+//
+// These Require DB Records <------
+//
+
+#[tokio::test]
+async fn patient_get() -> Result<()> {
+    let hc = httpc_test::new_client("http://localhost:3000")?;
+
+    hc.do_get("/get_patient/1").await?.print().await?;
 
     Ok(())
 }
 
 #[tokio::test]
-async fn provider_get() -> Result<()> {
+async fn patient_get_plus() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    hc.do_get("/get_provider/2").await?.print().await?;
-
-    Ok(())
-}
-
-#[tokio::test]
-async fn provider_get_plus() -> Result<()> {
-    let hc = httpc_test::new_client("http://localhost:3000")?;
-
-    let res = hc.do_get("/get_provider/1").await?;
+    let res = hc.do_get("/get_patient/1").await?;
     let status = res.status();
     // Pretty print the result (status, headers, response cookies, client cookies, body)
     let auth_token = res.res_cookie_value("auth-token"); // Option<String>
@@ -39,40 +43,31 @@ async fn provider_get_plus() -> Result<()> {
     Ok(())
 }
 
-#[tokio::test]
-async fn route_params_test() -> Result<()> {
-    let hc = httpc_test::new_client("http://localhost:3000")?;
-
-    let res = hc.do_get("/path_var/531").await?;
-    assert_eq!(res.text_body().expect("531").parse::<i32>().unwrap(), 531);
-
-    Ok(())
-}
-
 #[derive(Deserialize)]
-struct Provider {
-    provider_id: i32,
-    provider_name: String,
-    provider_phone: Option<String>
+struct Patient {
+    patient_id: i32,
+    patient_f_name: String,
+    patient_l_name: String,
+    patient_email: Option<String>
 }
 
 #[tokio::test]
-async fn provider_get_plus_params() -> Result<()> {
+async fn patient_get_plus_params() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    let res = hc.get::<Provider>("/get_provider/1").await?;
-    assert_eq!(res.provider_name, "Main Provider");
+    let res = hc.get::<Patient>("/get_patient/1").await?;
+    assert_eq!(res.patient_f_name, "Robert");
     // assert_eq!(res.json_body_as::<Provider>().provider_name, "Main Provider");
 
     Ok(())
 }
 
 #[tokio::test]
-async fn provider_get_plus_params_id() -> Result<()> {
+async fn patient_get_plus_params_id() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    let res = hc.get::<Provider>("/get_provider/1").await?;
-    assert_eq!(res.provider_id, 1);
+    let res = hc.get::<Patient>("/get_patient/1").await?;
+    assert_eq!(res.patient_id, 1);
     // assert_eq!(res.json_body_as::<Provider>().provider_name, "Main Provider");
 
     Ok(())
