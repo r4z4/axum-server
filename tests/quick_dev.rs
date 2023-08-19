@@ -1,4 +1,4 @@
-#![allow(unsused)] // For beginning only
+#![allow(unused)] // For beginning only
 
 use anyhow::Result;
 
