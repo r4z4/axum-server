@@ -21,3 +21,4 @@ validator = { version = "0.16.0", features = ["derive"] }
 
 [dev-dependencies]
 httpc-test = "0.1.1"
+anyhow = "1.0.75"
