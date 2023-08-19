@@ -1,4 +1,5 @@
 mod hello_world;
+mod template_render;
 mod mirror_body_string;
 mod mirror_body_json;
 mod mirror_user_agent;
@@ -17,9 +18,14 @@ mod get_provider;
 
 use axum::{
     routing::{get, post},
-    Router, body::Body, http::Method, Extension,
+    Router, body::Body, http::Method, Extension
 };
+use axum_template::{engine::Engine};
+use handlebars::Handlebars;
+use serde::Serialize;
+
 use hello_world::hello_world;
+use template_render::template_render;
 use mirror_body_string::mirror_body_string;
 use mirror_body_json::mirror_body_json;
 use path_var::path_var;
@@ -43,7 +49,16 @@ pub struct SharedData {
     pub message: String
 }
 
+#[derive(Clone)]
+struct AppState {
+    engine: AppEngine,
+}
+
+// Type alias for our engine. For this example, we are using Handlebars
+type AppEngine = Engine<Handlebars<'static>>;
+
 pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
+    let mut hbs = Handlebars::new();
     let cors = CorsLayer::new()
         .allow_methods([Method::GET, Method::POST])
         .allow_origin(Any);
@@ -53,6 +68,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
 
     Router::new()
         .route("/", get(hello_world))
+        .route("/template_render/:name", get(template_render))
         .route("/mirror_body_string", post(mirror_body_string))
         .route("/mirror_body_json", post(mirror_body_json))
         .route("/path_var/:id", get(path_var))
@@ -72,4 +88,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/get_providers", get(get_all_providers))
         .route("/get_provider/:provider_id", get(get_provider))
         .layer(Extension(database))
+        .with_state(AppState {
+            engine: Engine::from(hbs)
+        })
 }
