@@ -12,10 +12,14 @@ mod get_json;
 mod validate_with_serde;
 mod create_provider;
 mod create_patient;
+mod create_insurer;
+mod create_iro;
 mod custom_provider_extractor;
 mod custom_patient_extractor;
 mod get_provider;
 mod get_patient;
+mod get_insurer;
+mod get_iro;
 
 use axum::{
     routing::{get, post},
@@ -37,10 +41,14 @@ use get_json::get_json;
 use validate_with_serde::validate_with_serde;
 use create_provider::create_provider;
 use create_patient::create_patient;
+use create_insurer::create_insurer;
+use create_iro::create_iro;
 use custom_provider_extractor::custom_provider_extractor;
 use custom_patient_extractor::custom_patient_extractor;
 use get_provider::{get_provider, get_all_providers};
 use get_patient::{get_patient, get_all_patients};
+use get_insurer::{get_insurer, get_all_insurers};
+use get_iro::{get_iro, get_all_iros};
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -71,12 +79,19 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/get_json", post(get_json))
         .route("/validate_with_serde", post(validate_with_serde))
         .route("/create_provider", post(create_provider))
-        .route("/custom_provider_extractor", get(custom_provider_extractor))
         .route("/create_patient", post(create_patient))
+        .route("/create_insurer", post(create_insurer))
+        .route("/create_iro", post(create_iro))
+        // Get routes for Entities
+        .route("/custom_provider_extractor", get(custom_provider_extractor))
         .route("/custom_patient_extractor", get(custom_patient_extractor))
         .route("/get_providers", get(get_all_providers))
         .route("/get_provider/:provider_id", get(get_provider))
         .route("/get_patients", get(get_all_patients))
         .route("/get_patient/:patient_id", get(get_patient))
+        .route("/get_insurers", get(get_all_insurers))
+        .route("/get_insurer/:insurer_id", get(get_insurer))
+        .route("/get_iros", get(get_all_iros))
+        .route("/get_iro/:iro_id", get(get_iro))
         .layer(Extension(database))
 }

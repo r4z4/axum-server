@@ -6,6 +6,7 @@ use axum::{
 };
 use sea_orm::{DatabaseConnection, EntityTrait};
 use serde::{Serialize};
+use sea_orm::entity::prelude::*;
 
 #[derive(Serialize)]
 pub struct ResponseIro {

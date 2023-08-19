@@ -11,8 +11,13 @@ use serde::{Serialize};
 pub struct ResponseInsurer {
     insurer_id: i32,
     insurer_name: String,
-    insurer_phone: Option<String>
-    insurer_email: Option<String>
+    insurer_phone: Option<String>,
+    insurer_email: Option<String>,
+    insurer_address_1: Option<String>,
+    insurer_address_2: Option<String>,
+    insurer_zip: Option<String>,
+    insurer_contact_f_name: Option<String>,
+    insurer_contact_l_name: Option<String>,
 }
 
 pub async fn get_insurer(
@@ -30,6 +35,11 @@ pub async fn get_insurer(
             insurer_name: insurer.insurer_name,
             insurer_phone: insurer.insurer_phone,
             insurer_email: insurer.insurer_email,
+            insurer_address_1: insurer.insurer_address_1,
+            insurer_address_2: insurer.insurer_address_2,
+            insurer_zip: insurer.insurer_zip,
+            insurer_contact_f_name: insurer.insurer_contact_f_name,
+            insurer_contact_l_name: insurer.insurer_contact_l_name,
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
@@ -48,7 +58,12 @@ pub async fn get_all_insurers(Extension(database): Extension<DatabaseConnection>
             insurer_id: db_insurer.insurer_id,
             insurer_name: db_insurer.insurer_name,
             insurer_phone: db_insurer.insurer_phone,
-            insurer_email: db_imsurer.insurer_email,
+            insurer_email: db_insurer.insurer_email,
+            insurer_address_1: db_insurer.insurer_address_1,
+            insurer_address_2: db_insurer.insurer_address_2,
+            insurer_zip: db_insurer.insurer_zip,
+            insurer_contact_f_name: db_insurer.insurer_contact_f_name,
+            insurer_contact_l_name: db_insurer.insurer_contact_l_name,
         })
         .collect();
 
