@@ -5,12 +5,13 @@ use serde::{Deserialize};
 use serde::de::DeserializeOwned;
 use serde_json::{json, Value};
 use axum::extract::Path;
+use sea_orm::prelude::Date;
 
 #[tokio::test]
-async fn patients_get() -> Result<()> {
+async fn iros_get() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    hc.do_get("/get_patients").await?.print().await?;
+    hc.do_get("/get_iros").await?.print().await?;
 
     Ok(())
 }
@@ -20,19 +21,19 @@ async fn patients_get() -> Result<()> {
 //
 
 #[tokio::test]
-async fn patient_get() -> Result<()> {
+async fn iro_get() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    hc.do_get("/get_patient/1").await?.print().await?;
+    hc.do_get("/get_iro/1").await?.print().await?;
 
     Ok(())
 }
 
 #[tokio::test]
-async fn patient_get_plus() -> Result<()> {
+async fn iro_get_plus() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    let res = hc.do_get("/get_patient/1").await?;
+    let res = hc.do_get("/get_iro/1").await?;
     let status = res.status();
     // Pretty print the result (status, headers, response cookies, client cookies, body)
     let auth_token = res.res_cookie_value("auth-token"); // Option<String>
@@ -44,29 +45,34 @@ async fn patient_get_plus() -> Result<()> {
 }
 
 #[derive(Deserialize)]
-struct Patient {
-    patient_id: i32,
-    patient_f_name: String,
-    patient_l_name: String,
-    patient_email: Option<String>
+struct Iro {
+    iro_id: i32,
+    iro_name: String,
+    iro_email: Option<String>,
+    iro_address_1: Option<String>,
+    iro_address_2: Option<String>,
+    iro_zip: Option<String>,
+    iro_contact_f_name: Option<String>,
+    iro_contact_l_name: Option<String>,
+    iro_license_expiration: Option<Date>,
 }
 
 #[tokio::test]
-async fn patient_get_plus_params() -> Result<()> {
+async fn iro_get_plus_params() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    let res = hc.get::<Patient>("/get_patient/1").await?;
-    assert_eq!(res.patient_f_name, "Robert");
+    let res = hc.get::<Iro>("/get_iro/1").await?;
+    assert_eq!(res.iro_name, "Maximus Federal Services");
 
     Ok(())
 }
 
 #[tokio::test]
-async fn patient_get_plus_params_id() -> Result<()> {
+async fn iro_get_plus_params_id() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    let res = hc.get::<Patient>("/get_patient/1").await?;
-    assert_eq!(res.patient_id, 1);
+    let res = hc.get::<Iro>("/get_iro/1").await?;
+    assert_eq!(res.iro_id, 1);
 
     Ok(())
 }
