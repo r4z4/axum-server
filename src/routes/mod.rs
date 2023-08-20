@@ -17,12 +17,13 @@ mod create_iro;
 mod custom_provider_extractor;
 mod custom_patient_extractor;
 mod get_provider;
+mod update_provider;
 mod get_patient;
 mod get_insurer;
 mod get_iro;
 
 use axum::{
-    routing::{get, post},
+    routing::{get, post, put},
     Router, body::Body, http::Method, Extension,
 };
 use hello_world::hello_world;
@@ -39,6 +40,7 @@ use always_errors::always_errors;
 use returns_201::returns_201;
 use get_json::get_json;
 use validate_with_serde::validate_with_serde;
+use update_provider::atomic_update_provider;
 use create_provider::create_provider;
 use create_patient::create_patient;
 use create_insurer::create_insurer;
@@ -78,6 +80,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/returns_201", post(returns_201))
         .route("/get_json", post(get_json))
         .route("/validate_with_serde", post(validate_with_serde))
+        .route("/provider/:provider_id", put(atomic_update_provider))
         .route("/create_provider", post(create_provider))
         .route("/create_patient", post(create_patient))
         .route("/create_insurer", post(create_insurer))
