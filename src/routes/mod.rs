@@ -10,17 +10,23 @@ mod always_errors;
 mod returns_201;
 mod get_json;
 mod validate_with_serde;
+mod create_eligible_case;
 mod create_provider;
 mod create_patient;
 mod create_insurer;
 mod create_iro;
 mod custom_provider_extractor;
 mod custom_patient_extractor;
+mod get_eligible_case;
 mod get_provider;
-mod update_provider;
 mod get_patient;
 mod get_insurer;
 mod get_iro;
+mod update_provider;
+mod update_patient;
+mod update_insurer;
+mod update_iro;
+mod update_eligible_case;
 
 use axum::{
     routing::{get, post, put},
@@ -40,13 +46,19 @@ use always_errors::always_errors;
 use returns_201::returns_201;
 use get_json::get_json;
 use validate_with_serde::validate_with_serde;
+use update_patient::atomic_update_patient;
 use update_provider::atomic_update_provider;
+use update_insurer::atomic_update_insurer;
+use update_iro::atomic_update_iro;
+use update_eligible_case::atomic_update_eligible_case;
+use create_eligible_case::create_eligible_case;
 use create_provider::create_provider;
 use create_patient::create_patient;
 use create_insurer::create_insurer;
 use create_iro::create_iro;
 use custom_provider_extractor::custom_provider_extractor;
 use custom_patient_extractor::custom_patient_extractor;
+use get_eligible_case::{get_eligible_case, get_all_eligible_cases};
 use get_provider::{get_provider, get_all_providers};
 use get_patient::{get_patient, get_all_patients};
 use get_insurer::{get_insurer, get_all_insurers};
@@ -80,7 +92,14 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/returns_201", post(returns_201))
         .route("/get_json", post(get_json))
         .route("/validate_with_serde", post(validate_with_serde))
+        // Update Routes
         .route("/provider/:provider_id", put(atomic_update_provider))
+        .route("/patient/:patient_id", put(atomic_update_patient))
+        .route("/insurer/:insurer_id", put(atomic_update_insurer))
+        .route("/iro/:iro_id", put(atomic_update_iro))
+        .route("/eligible_case/:eligible_case_id", put(atomic_update_eligible_case))
+        // Create Routes
+        .route("/create_eligible_case", post(create_eligible_case))
         .route("/create_provider", post(create_provider))
         .route("/create_patient", post(create_patient))
         .route("/create_insurer", post(create_insurer))
@@ -88,6 +107,8 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         // Get routes for Entities
         .route("/custom_provider_extractor", get(custom_provider_extractor))
         .route("/custom_patient_extractor", get(custom_patient_extractor))
+        .route("/get_eligible_cases", get(get_all_eligible_cases))
+        .route("/get_eligible_case/:eligible_case_id", get(get_eligible_case))
         .route("/get_providers", get(get_all_providers))
         .route("/get_provider/:provider_id", get(get_provider))
         .route("/get_patients", get(get_all_patients))

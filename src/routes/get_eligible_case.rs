@@ -4,16 +4,16 @@ use axum::{
     http::StatusCode,
     Extension, Json,
 };
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{DatabaseConnection, EntityTrait, prelude::Date};
 use serde::{Serialize};
 
 #[derive(Serialize)]
 pub struct ResponseEligibleCase {
     case_id: i32,
     patient_id: i32,
-    insurer_id: String,
-    iro_id: Option<String>,
-    provider_id: Option<String>,
+    insurer_id: i32,
+    iro_id: Option<i32>,
+    provider_id: Option<i32>,
     denial_reason: Option<String>,
     expedited: Option<i32>,
     date_forwarded: Option<Date>,

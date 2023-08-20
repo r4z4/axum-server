@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
     Extension, Json,
 };
-use sea_orm::{DatabaseConnection, EntityTrait};
+use sea_orm::{DatabaseConnection, EntityTrait, prelude::Date};
 use serde::{Serialize};
 
 #[derive(Serialize)]
@@ -13,6 +13,10 @@ pub struct ResponsePatient {
     patient_f_name: String,
     patient_l_name: String,
     patient_email: Option<String>,
+    patient_dob: Option<Date>,
+    patient_address_1: Option<String>,
+    patient_address_2: Option<String>,
+    patient_zip: Option<String>,
 }
 
 pub async fn get_patient(
@@ -30,6 +34,10 @@ pub async fn get_patient(
             patient_f_name: patient.patient_f_name,
             patient_l_name: patient.patient_l_name,
             patient_email: patient.patient_email,
+            patient_dob: patient.patient_dob,
+            patient_address_1: patient.patient_address_1,
+            patient_address_2: patient.patient_address_2,
+            patient_zip: patient.patient_zip,
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
@@ -49,6 +57,10 @@ pub async fn get_all_patients(Extension(database): Extension<DatabaseConnection>
             patient_f_name: db_patient.patient_f_name,
             patient_l_name: db_patient.patient_l_name,
             patient_email: db_patient.patient_email,
+            patient_dob: db_patient.patient_dob,
+            patient_address_1: db_patient.patient_address_1,
+            patient_address_2: db_patient.patient_address_2,
+            patient_zip: db_patient.patient_zip,
         })
         .collect();
 

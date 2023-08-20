@@ -8,9 +8,9 @@ pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
     pub case_id: i32,
     pub patient_id: i32,
-    pub insurer_id: String,
-    pub iro_id: Option<String>,
-    pub provider_id: Option<String>,
+    pub insurer_id: i32,
+    pub iro_id: Option<i32>,
+    pub provider_id: Option<i32>,
     pub denial_reason: Option<String>,
     pub expedited: Option<i32>,
     pub date_forwarded: Option<Date>,
@@ -18,7 +18,6 @@ pub struct Model {
     pub eligible_correspondence: Option<Date>,
     pub insurer_notified: Option<Date>,
     pub decision_date: Option<Date>,
-    #[sea_orm(column_name = "Iro_decision")]
     pub iro_decision: Option<String>,
     pub file_closed: Option<Date>,
     #[sea_orm(column_type = "Double", nullable)]

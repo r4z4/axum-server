@@ -12,7 +12,11 @@ pub struct ResponseProvider {
     provider_id: i32,
     provider_name: String,
     provider_zip: Option<String>,
-    provider_phone: Option<String>
+    provider_phone: Option<String>,
+    provider_address_1: Option<String>,
+    provider_address_2: Option<String>,
+    provider_contact_f_name: Option<String>,
+    provider_contact_l_name: Option<String>,
 }
 
 pub async fn get_provider(
@@ -30,6 +34,10 @@ pub async fn get_provider(
             provider_name: provider.provider_name,
             provider_zip: provider.provider_zip,
             provider_phone: provider.provider_phone,
+            provider_address_1: provider.provider_address_1,
+            provider_address_2: provider.provider_address_2,
+            provider_contact_f_name: provider.provider_contact_f_name,
+            provider_contact_l_name: provider.provider_contact_l_name,
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
@@ -67,6 +75,10 @@ pub async fn get_all_providers(
             provider_name: db_provider.provider_name,
             provider_zip: db_provider.provider_zip,
             provider_phone: db_provider.provider_phone,
+            provider_address_1: db_provider.provider_address_1,
+            provider_address_2: db_provider.provider_address_2,
+            provider_contact_f_name: db_provider.provider_contact_f_name,
+            provider_contact_l_name: db_provider.provider_contact_l_name,
         })
         .collect();
 
