@@ -1,11 +1,11 @@
-use crate::database::insurer::Entity as Insurer;
+use crate::database::insurer::{self, Entity as Insurer};
 use axum::{
-    extract::{Path},
+    extract::{Path, Query, Json},
     http::StatusCode,
-    Extension, Json,
+    Extension,
 };
-use sea_orm::{DatabaseConnection, EntityTrait};
-use serde::{Serialize};
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait, Condition};
+use serde::{Serialize, Deserialize};
 
 #[derive(Serialize)]
 pub struct ResponseInsurer {
@@ -46,10 +46,27 @@ pub async fn get_insurer(
     }
 }
 
-pub async fn get_all_insurers(Extension(database): Extension<DatabaseConnection>) -> Result<Json<Vec<ResponseInsurer>>, StatusCode> {
+#[derive(Deserialize)]
+pub struct GetInsurerQueryParams {
+    name: Option<String>
+}
+
+pub async fn get_all_insurers(
+    Extension(database): Extension<DatabaseConnection>, 
+    Query(query_params): Query<GetInsurerQueryParams>
+) -> Result<Json<Vec<ResponseInsurer>>, StatusCode> {
+    let mut name_filter = Condition::all();
+    if let Some(name) = query_params.name {
+        name_filter = if name.is_empty() {
+            name_filter.add(insurer::Column::InsurerName.is_null())
+        } else {
+            name_filter.add(insurer::Column::InsurerName.eq(name))
+        };
+    }
     let insurers = Insurer::find()
         // .filter(priority_filter)
         // .filter(tasks::Column::DeletedAt.is_null())
+        .filter(name_filter)
         .all(&database)
         .await
         .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?
