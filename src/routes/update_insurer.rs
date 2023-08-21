@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
 };
-use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::DateTimeWithTimeZone};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -17,6 +17,7 @@ pub struct RequestInsurer {
     pub insurer_contact_f_name: Option<String>,
     pub insurer_contact_l_name: Option<String>,
     pub insurer_phone: Option<String>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn atomic_update_insurer(
@@ -34,6 +35,7 @@ pub async fn atomic_update_insurer(
         insurer_contact_f_name: Set(request_insurer.insurer_contact_f_name),
         insurer_contact_l_name: Set(request_insurer.insurer_contact_l_name),
         insurer_phone: Set(request_insurer.insurer_phone),
+        deleted_at: Set(request_insurer.deleted_at),
     };
 
     Insurer::update(update_insurer)

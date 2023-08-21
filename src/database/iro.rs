@@ -15,6 +15,7 @@ pub struct Model {
     pub iro_contact_l_name: Option<String>,
     pub iro_email: Option<String>,
     pub iro_license_expiration: Option<Date>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

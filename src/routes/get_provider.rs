@@ -4,7 +4,7 @@ use axum::{
     http::StatusCode,
     Extension,
 };
-use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait, Condition};
+use sea_orm::{DatabaseConnection, EntityTrait, QueryFilter, ColumnTrait, Condition, prelude::DateTimeWithTimeZone};
 use serde::{Serialize, Deserialize};
 
 #[derive(Serialize)]
@@ -17,6 +17,7 @@ pub struct ResponseProvider {
     provider_address_2: Option<String>,
     provider_contact_f_name: Option<String>,
     provider_contact_l_name: Option<String>,
+    deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn get_provider(
@@ -24,6 +25,7 @@ pub async fn get_provider(
     Extension(database): Extension<DatabaseConnection>
 ) -> Result<Json<ResponseProvider>, StatusCode> {
     let provider = Provider::find_by_id(provider_id)
+    .filter(provider::Column::DeletedAt.is_null())
     .one(&database)
     .await
     .unwrap();
@@ -38,6 +40,7 @@ pub async fn get_provider(
             provider_address_2: provider.provider_address_2,
             provider_contact_f_name: provider.provider_contact_f_name,
             provider_contact_l_name: provider.provider_contact_l_name,
+            deleted_at: provider.deleted_at,
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
@@ -63,9 +66,8 @@ pub async fn get_all_providers(
         };
     }
     let providers = Provider::find()
-        // .filter(priority_filter)
-        // .filter(tasks::Column::DeletedAt.is_null())
-        .filter(zip_filter)
+        .filter(provider::Column::DeletedAt.is_null())
+        // .filter(zip_filter)
         .all(&database)
         .await
         .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?
@@ -79,6 +81,7 @@ pub async fn get_all_providers(
             provider_address_2: db_provider.provider_address_2,
             provider_contact_f_name: db_provider.provider_contact_f_name,
             provider_contact_l_name: db_provider.provider_contact_l_name,
+            deleted_at: db_provider.deleted_at,
         })
         .collect();
 

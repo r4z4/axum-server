@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
 };
-use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::DateTimeWithTimeZone};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -16,6 +16,7 @@ pub struct RequestProvider {
     pub provider_contact_f_name: Option<String>,
     pub provider_contact_l_name: Option<String>,
     pub provider_phone: Option<String>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn atomic_update_provider(
@@ -33,6 +34,8 @@ pub async fn atomic_update_provider(
         provider_contact_f_name: Set(request_provider.provider_contact_f_name),
         provider_contact_l_name: Set(request_provider.provider_contact_l_name),
         provider_phone: Set(request_provider.provider_phone),
+        deleted_at: Set(request_provider.deleted_at),
+        
     };
 
     Provider::update(update_provider)

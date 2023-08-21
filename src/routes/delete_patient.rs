@@ -1,4 +1,4 @@
-use crate::database::provider::{self, Entity as Provider};
+use crate::database::patient::{self, Entity as Patient};
 use axum::{
     extract::{Path, Extension, Query},
     http::StatusCode,
@@ -11,37 +11,37 @@ pub struct QueryParams {
     soft: bool,
 }
 
-pub async fn delete_provider(
-    Path(provider_id): Path<i32>,
+pub async fn delete_patient(
+    Path(patient_id): Path<i32>,
     Extension(database): Extension<DatabaseConnection>,
     Query(query_params): Query<QueryParams>
 ) -> Result<(), StatusCode> {
-    let mut provider = if let Some(provider) = Provider::find_by_id(provider_id)
+    let mut patient = if let Some(patient) = Patient::find_by_id(patient_id)
         .one(&database)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? 
         {
-            provider.into_active_model()
+            patient.into_active_model()
         } else {
             return Err(StatusCode::NOT_FOUND);
         };
 
     if query_params.soft {
         let now = chrono::Utc::now();
-        provider.deleted_at = Set(Some(now.into()));
-        Provider::update(provider)
+        patient.deleted_at = Set(Some(now.into()));
+        Patient::update(patient)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     } else {
-        Provider::delete(provider)
+        Patient::delete(patient)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     }
 
-    // Provider::delete_many()
-    //     .filter(provider::Column:ProviderId.eq(provider_id))
+    // Patient::delete_many()
+    //     .filter(patient::Column:PatientId.eq(patient_id))
     //     .exec(&database)
     //     .await
     //     .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;

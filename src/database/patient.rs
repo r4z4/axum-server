@@ -14,6 +14,7 @@ pub struct Model {
     pub patient_address_2: Option<String>,
     pub patient_zip: Option<String>,
     pub patient_email: Option<String>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

@@ -1,4 +1,4 @@
-use crate::database::provider::{self, Entity as Provider};
+use crate::database::eligible_cases::{self, Entity as EligibleCase};
 use axum::{
     extract::{Path, Extension, Query},
     http::StatusCode,
@@ -11,37 +11,37 @@ pub struct QueryParams {
     soft: bool,
 }
 
-pub async fn delete_provider(
-    Path(provider_id): Path<i32>,
+pub async fn delete_eligible_case(
+    Path(eligible_case_id): Path<i32>,
     Extension(database): Extension<DatabaseConnection>,
     Query(query_params): Query<QueryParams>
 ) -> Result<(), StatusCode> {
-    let mut provider = if let Some(provider) = Provider::find_by_id(provider_id)
+    let mut eligible_case = if let Some(eligible_case) = EligibleCase::find_by_id(eligible_case_id)
         .one(&database)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? 
         {
-            provider.into_active_model()
+            eligible_case.into_active_model()
         } else {
             return Err(StatusCode::NOT_FOUND);
         };
 
     if query_params.soft {
         let now = chrono::Utc::now();
-        provider.deleted_at = Set(Some(now.into()));
-        Provider::update(provider)
+        eligible_case.deleted_at = Set(Some(now.into()));
+        EligibleCase::update(eligible_case)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     } else {
-        Provider::delete(provider)
+        EligibleCase::delete(eligible_case)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     }
 
-    // Provider::delete_many()
-    //     .filter(provider::Column:ProviderId.eq(provider_id))
+    // EligibleCase::delete_many()
+    //     .filter(eligible_case::Column:EligibleCaseId.eq(eligible_case_id))
     //     .exec(&database)
     //     .await
     //     .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;

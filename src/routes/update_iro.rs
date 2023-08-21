@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
 };
-use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date, prelude::DateTimeWithTimeZone};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -17,6 +17,7 @@ pub struct RequestIro {
     pub iro_contact_l_name: Option<String>,
     pub iro_email: Option<String>,
     pub iro_license_expiration: Option<Date>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn atomic_update_iro(
@@ -34,6 +35,7 @@ pub async fn atomic_update_iro(
         iro_contact_l_name: Set(request_iro.iro_contact_l_name),
         iro_email: Set(request_iro.iro_email),
         iro_license_expiration: Set(request_iro.iro_license_expiration),
+        deleted_at: Set(request_iro.deleted_at),
     };
 
     Iro::update(update_iro)

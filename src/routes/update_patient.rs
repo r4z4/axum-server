@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
 };
-use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date, prelude::DateTimeWithTimeZone};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -16,6 +16,7 @@ pub struct RequestPatient {
     pub patient_f_name: String,
     pub patient_l_name: String,
     pub patient_dob: Option<Date>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn atomic_update_patient(
@@ -32,6 +33,7 @@ pub async fn atomic_update_patient(
         patient_f_name: Set(request_patient.patient_f_name),
         patient_l_name: Set(request_patient.patient_l_name),
         patient_dob: Set(request_patient.patient_dob),
+        deleted_at: Set(request_patient.deleted_at),
     };
 
     Patient::update(update_patient)

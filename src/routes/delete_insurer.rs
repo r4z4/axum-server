@@ -1,4 +1,4 @@
-use crate::database::provider::{self, Entity as Provider};
+use crate::database::insurer::{self, Entity as Insurer};
 use axum::{
     extract::{Path, Extension, Query},
     http::StatusCode,
@@ -11,37 +11,37 @@ pub struct QueryParams {
     soft: bool,
 }
 
-pub async fn delete_provider(
-    Path(provider_id): Path<i32>,
+pub async fn delete_insurer(
+    Path(insurer_id): Path<i32>,
     Extension(database): Extension<DatabaseConnection>,
     Query(query_params): Query<QueryParams>
 ) -> Result<(), StatusCode> {
-    let mut provider = if let Some(provider) = Provider::find_by_id(provider_id)
+    let mut insurer = if let Some(insurer) = Insurer::find_by_id(insurer_id)
         .one(&database)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)? 
         {
-            provider.into_active_model()
+            insurer.into_active_model()
         } else {
             return Err(StatusCode::NOT_FOUND);
         };
 
     if query_params.soft {
         let now = chrono::Utc::now();
-        provider.deleted_at = Set(Some(now.into()));
-        Provider::update(provider)
+        insurer.deleted_at = Set(Some(now.into()));
+        Insurer::update(insurer)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     } else {
-        Provider::delete(provider)
+        Insurer::delete(insurer)
             .exec(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
     }
 
-    // Provider::delete_many()
-    //     .filter(provider::Column:ProviderId.eq(provider_id))
+    // Insurer::delete_many()
+    //     .filter(insurer::Column:InsurerId.eq(insurer_id))
     //     .exec(&database)
     //     .await
     //     .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;

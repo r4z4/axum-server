@@ -22,6 +22,7 @@ pub struct Model {
     pub file_closed: Option<Date>,
     #[sea_orm(column_type = "Double", nullable)]
     pub invoice_amount: Option<f64>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

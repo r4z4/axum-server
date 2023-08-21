@@ -33,6 +33,10 @@ mod patch_insurer;
 mod patch_iro;
 mod patch_eligible_case;
 mod delete_provider;
+mod delete_patient;
+mod delete_insurer;
+mod delete_iro;
+mod delete_eligible_case;
 
 use axum::{
     routing::{get, post, put, patch, delete},
@@ -75,6 +79,10 @@ use get_patient::{get_patient, get_all_patients};
 use get_insurer::{get_insurer, get_all_insurers};
 use get_iro::{get_iro, get_all_iros};
 use delete_provider::{delete_provider};
+use delete_patient::{delete_patient};
+use delete_insurer::{delete_insurer};
+use delete_iro::{delete_iro};
+use delete_eligible_case::{delete_eligible_case};
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -123,6 +131,10 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/create_iro", post(create_iro))
         // Delete Routes
         .route("/provider/:provider_id", delete(delete_provider))
+        .route("/patient/:patient_id", delete(delete_patient))
+        .route("/insurer/:insurer_id", delete(delete_insurer))
+        .route("/iro/:iro_id", delete(delete_iro))
+        .route("/eligible_case/:eligible_case_id", delete(delete_eligible_case))
         // Get routes for Entities
         .route("/custom_provider_extractor", get(custom_provider_extractor))
         .route("/custom_patient_extractor", get(custom_patient_extractor))

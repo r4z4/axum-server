@@ -15,6 +15,7 @@ pub struct Model {
     pub insurer_contact_l_name: Option<String>,
     pub insurer_phone: Option<String>,
     pub insurer_email: Option<String>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

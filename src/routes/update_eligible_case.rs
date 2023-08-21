@@ -3,7 +3,7 @@ use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
 };
-use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, QueryFilter, EntityTrait, prelude::Date, prelude::DateTimeWithTimeZone};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
@@ -23,6 +23,7 @@ pub struct RequestEligibleCase {
     pub iro_decision: Option<String>,
     pub file_closed: Option<Date>,
     pub invoice_amount: Option<f64>,
+    pub deleted_at: Option<DateTimeWithTimeZone>,
 }
 
 pub async fn atomic_update_eligible_case(
@@ -47,6 +48,7 @@ pub async fn atomic_update_eligible_case(
         iro_decision: Set(request_eligible_case.iro_decision),
         file_closed: Set(request_eligible_case.file_closed),
         invoice_amount: Set(request_eligible_case.invoice_amount),
+        deleted_at: Set(request_eligible_case.deleted_at),
     };
 
     EligibleCase::update(update_eligible_case)
