@@ -27,9 +27,10 @@ mod update_patient;
 mod update_insurer;
 mod update_iro;
 mod update_eligible_case;
+mod patch_provider;
 
 use axum::{
-    routing::{get, post, put},
+    routing::{get, post, put, patch},
     Router, body::Body, http::Method, Extension,
 };
 use hello_world::hello_world;
@@ -46,6 +47,7 @@ use always_errors::always_errors;
 use returns_201::returns_201;
 use get_json::get_json;
 use validate_with_serde::validate_with_serde;
+use patch_provider::partial_update_provider;
 use update_patient::atomic_update_patient;
 use update_provider::atomic_update_provider;
 use update_insurer::atomic_update_insurer;
@@ -94,6 +96,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/validate_with_serde", post(validate_with_serde))
         // Update Routes
         .route("/provider/:provider_id", put(atomic_update_provider))
+        .route("/provider/patch/:provider_id", patch(partial_update_provider))
         .route("/patient/:patient_id", put(atomic_update_patient))
         .route("/insurer/:insurer_id", put(atomic_update_insurer))
         .route("/iro/:iro_id", put(atomic_update_iro))

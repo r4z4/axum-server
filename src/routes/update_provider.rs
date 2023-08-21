@@ -24,6 +24,7 @@ pub async fn atomic_update_provider(
     Json(request_provider): Json<RequestProvider>
 ) -> Result<(), StatusCode> {
     let update_provider = provider::ActiveModel {
+        // Not allowing them to update ID
         provider_id: Set(provider_id),
         provider_name: Set(request_provider.provider_name),
         provider_address_1: Set(request_provider.provider_address_1),
