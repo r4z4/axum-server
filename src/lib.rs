@@ -1,5 +1,6 @@
 mod routes;
 mod database;
+mod utils;
 use routes::create_routes;
 use sea_orm::Database;
 

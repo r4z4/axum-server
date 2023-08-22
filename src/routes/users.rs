@@ -1,4 +1,7 @@
-use crate::database::user::{self, Model, Entity as User};
+use crate::{
+    database::user::{self, Model, Entity as User},
+    utils::jwt::{create_jwt, is_valid},
+};
 use axum::{
     headers::{authorization::Bearer, Authorization},
     extract::{Extension, Json},
@@ -6,6 +9,7 @@ use axum::{
 };
 use sea_orm::{DatabaseConnection, Set, ColumnTrait, ActiveModelTrait, QueryFilter, EntityTrait, IntoActiveModel};
 use serde::{Serialize, Deserialize};
+use uuid::Uuid;
 
 #[derive(Deserialize)]
 pub struct RequestUser {
@@ -49,10 +53,11 @@ pub async fn create_user(
     Json(request_user): Json<RequestUser>
 ) -> Result<Json<ResponseUser>, StatusCode> {
     let now = chrono::Utc::now();
+    let jwt = create_jwt()?;
     let new_user = user::ActiveModel{ 
         username: Set(request_user.username),
-        password: Set(request_user.password),
-        token: Set(Some("asdfasd3453".to_owned())),
+        password: Set(hash_password(request_user.password)?),
+        token: Set(Some(jwt)),
         created_at: Set(now.into()),
         ..Default::default()
      }
@@ -77,10 +82,14 @@ pub async fn login(
         .await.map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     if let Some(db_user) = db_user {
-        let new_token = "kfywmd74kf893".to_owned();
+        if !verify_password(request_user.password, &db_user.password)? {
+            return Err(StatusCode::UNAUTHORIZED);
+        }
+
+        let new_jwt = create_jwt()?;
         let mut user = db_user.into_active_model();
 
-        user.token = Set(Some(new_token));
+        user.token = Set(Some(new_jwt));
         let saved_user = user.save(&database)
             .await
             .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
@@ -106,4 +115,12 @@ pub async fn logout(
         .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
 
     Ok(())
+}
+
+fn hash_password(password: String) -> Result<String, StatusCode> {
+    bcrypt::hash(password, 14).map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)
+}
+
+fn verify_password(password: String, hash: &str) -> Result<bool, StatusCode> {
+    bcrypt::verify(password, hash).map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)
 }

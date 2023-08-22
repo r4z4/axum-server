@@ -20,7 +20,17 @@ tower-http = { version = "0.4.0", features = ["cors"] }
 validator = { version = "0.16.0", features = ["derive"] }
 serde_with = "3.3.0"
 chrono = "0.4.26"
+bcrypt = "0.15.0"
+jsonwebtoken = "8.3.0"
 
 [dev-dependencies]
 httpc-test = "0.1.1"
 anyhow = "1.0.75"
+
+[dependencies.uuid]
+version = "1.4.1"
+features = [
+    "v4",                # Lets you generate random UUIDs
+    "fast-rng",          # Use a faster (but still sufficiently random) RNG
+    "macro-diagnostics", # Enable better diagnostics for compile-time UUIDs
+]
