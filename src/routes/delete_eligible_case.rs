@@ -1,4 +1,4 @@
-use crate::database::eligible_cases::{self, Entity as EligibleCase};
+use crate::database::eligible_case::{self, Entity as EligibleCase};
 use axum::{
     extract::{Path, Extension, Query},
     http::StatusCode,

@@ -1,11 +1,11 @@
-use crate::database::eligible_cases;
+use crate::database::eligible_case;
 use axum::{Extension};
 use sea_orm::{DatabaseConnection, Set};
 use sea_orm::{ActiveModelTrait};
 use sea_orm::entity::prelude::{Date};
 
 pub async fn create_eligible_case(Extension(database): Extension<DatabaseConnection>) {
-    let new_eligible_case = eligible_cases::ActiveModel{ 
+    let new_eligible_case = eligible_case::ActiveModel{ 
         // Some() is for Option<>
         patient_id: Set(1),
         insurer_id: Set(1),

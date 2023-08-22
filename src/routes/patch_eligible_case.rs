@@ -1,4 +1,4 @@
-use crate::database::eligible_cases::{self, Entity as EligibleCase};
+use crate::database::eligible_case::{self, Entity as EligibleCase};
 use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
@@ -134,7 +134,7 @@ pub async fn partial_update_eligible_case(
     }
 
     EligibleCase::update(db_eligible_case)
-        .filter(eligible_cases::Column::CaseId.eq(eligible_case_id))
+        .filter(eligible_case::Column::EligibleCaseId.eq(eligible_case_id))
         .exec(&database)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;

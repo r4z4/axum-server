@@ -1,4 +1,4 @@
-use crate::database::eligible_cases::{self, Entity as EligibleCase};
+use crate::database::eligible_case::{self, Entity as EligibleCase};
 use axum::{
     extract::{Path, Extension, Json},
     http::StatusCode,
@@ -8,7 +8,7 @@ use serde::Deserialize;
 
 #[derive(Deserialize)]
 pub struct RequestEligibleCase {
-    pub case_id: i32,
+    pub eligible_case_id: i32,
     pub patient_id: i32,
     pub insurer_id: i32,
     pub iro_id: Option<i32>,
@@ -31,9 +31,9 @@ pub async fn atomic_update_eligible_case(
     Extension(database): Extension<DatabaseConnection>,
     Json(request_eligible_case): Json<RequestEligibleCase>
 ) -> Result<(), StatusCode> {
-    let update_eligible_case = eligible_cases::ActiveModel {
+    let update_eligible_case = eligible_case::ActiveModel {
         // FIXME: Change case_id => eligible_case_id
-        case_id: Set(eligible_case_id),
+        eligible_case_id: Set(eligible_case_id),
         patient_id: Set(request_eligible_case.patient_id),
         insurer_id: Set(request_eligible_case.insurer_id),
         iro_id: Set(request_eligible_case.iro_id),
@@ -53,7 +53,7 @@ pub async fn atomic_update_eligible_case(
 
     EligibleCase::update(update_eligible_case)
         // FIXME: Change table name to singular. Change Col name to eligible_case_id
-        .filter(eligible_cases::Column::CaseId.eq(eligible_case_id))
+        .filter(eligible_case::Column::EligibleCaseId.eq(eligible_case_id))
         .exec(&database)
         .await
         .map_err(|_| StatusCode::INTERNAL_SERVER_ERROR)?;

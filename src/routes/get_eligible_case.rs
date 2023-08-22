@@ -1,4 +1,4 @@
-use crate::database::eligible_cases::Entity as EligibleCase;
+use crate::database::eligible_case::Entity as EligibleCase;
 use axum::{
     extract::{Path},
     http::StatusCode,
@@ -9,7 +9,7 @@ use serde::{Serialize};
 
 #[derive(Serialize)]
 pub struct ResponseEligibleCase {
-    case_id: i32,
+    eligible_case_id: i32,
     patient_id: i32,
     insurer_id: i32,
     iro_id: Option<i32>,
@@ -37,7 +37,7 @@ pub async fn get_eligible_case(
 
     if let Some(eligible_case) = eligible_case {
         Ok(Json(ResponseEligibleCase {
-            case_id: eligible_case.case_id,
+            eligible_case_id: eligible_case.eligible_case_id,
             patient_id: eligible_case.patient_id,
             insurer_id: eligible_case.insurer_id,
             iro_id: eligible_case.iro_id,
@@ -67,7 +67,7 @@ pub async fn get_all_eligible_cases(Extension(database): Extension<DatabaseConne
         .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?
         .into_iter()
         .map(|db_eligible_case| ResponseEligibleCase {
-            case_id: db_eligible_case.case_id,
+            eligible_case_id: db_eligible_case.eligible_case_id,
             patient_id: db_eligible_case.patient_id,
             insurer_id: db_eligible_case.insurer_id,
             iro_id: db_eligible_case.iro_id,

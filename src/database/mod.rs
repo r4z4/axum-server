@@ -2,8 +2,9 @@
 
 pub mod prelude;
 
-pub mod eligible_cases;
+pub mod eligible_case;
 pub mod insurer;
 pub mod iro;
 pub mod patient;
 pub mod provider;
+pub mod user;

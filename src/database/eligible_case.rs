@@ -3,10 +3,10 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
-#[sea_orm(table_name = "eligible_cases")]
+#[sea_orm(table_name = "eligible_case")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub case_id: i32,
+    pub eligible_case_id: i32,
     pub patient_id: i32,
     pub insurer_id: i32,
     pub iro_id: Option<i32>,
