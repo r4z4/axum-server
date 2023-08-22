@@ -1,19 +1,41 @@
 use crate::database::eligible_case;
-use axum::{Extension};
-use sea_orm::{DatabaseConnection, Set};
-use sea_orm::{ActiveModelTrait};
-use sea_orm::entity::prelude::{Date};
+use axum::{
+    extract::{Extension, Json},
+    http::StatusCode,
+};
+use sea_orm::{DatabaseConnection, Set, prelude::Date, ActiveModelTrait};
+use serde::{Serialize, Deserialize};
 
-pub async fn create_eligible_case(Extension(database): Extension<DatabaseConnection>) {
+#[derive(Deserialize)]
+pub struct RequestEligibleCase {
+    patient_id: i32,
+    insurer_id: i32,
+    iro_id: Option<i32>,
+    provider_id: Option<i32>,
+    denial_reason: Option<String>,
+    expedited: Option<i32>,
+    date_forwarded: Option<String>,
+}
+
+#[axum_macros::debug_handler]
+pub async fn create_eligible_case(
+    Extension(database): Extension<DatabaseConnection>,
+    Json(request_eligible_case): Json<RequestEligibleCase> 
+) {
+    // let split: Vec<&str> = request_eligible_case.date_forwarded.split("-").collect();
+    let input_year: i32 = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(0).unwrap_or("2023").parse::<i32>().unwrap();
+    let input_month: u32  = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(1).unwrap_or("1").parse::<u32>().unwrap();
+    let input_day: u32  = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(2).unwrap_or("1").parse::<u32>().unwrap();
     let new_eligible_case = eligible_case::ActiveModel{ 
         // Some() is for Option<>
-        patient_id: Set(1),
-        insurer_id: Set(1),
-        iro_id: Set(Some(1)),
-        provider_id: Set(Some(1)),
-        denial_reason: Set(Some("Cosmetic Operation".to_owned())),
-        expedited: Set(Some(0)),
-        date_forwarded: Set(Some(Date::from_ymd_opt(2023, 1, 3).unwrap())),
+        patient_id: Set(request_eligible_case.patient_id),
+        insurer_id: Set(request_eligible_case.insurer_id),
+        iro_id: Set(request_eligible_case.iro_id),
+        provider_id: Set(request_eligible_case.provider_id),
+        denial_reason: Set(request_eligible_case.denial_reason),
+        expedited: Set(request_eligible_case.expedited),
+        // date_forwarded: Set(Some(Date::from_ymd_opt(2023, 1, 3).unwrap())),
+        date_forwarded: Set(Some(Date::from_ymd_opt(input_year, input_month, input_day).unwrap())),
         eligibility_notice: Set(Some(Date::from_ymd_opt(2023, 1, 3).unwrap())),
         eligible_correspondence: Set(Some(Date::from_ymd_opt(2023, 1, 3).unwrap())),
         insurer_notified: Set(Some(Date::from_ymd_opt(2023, 1, 3).unwrap())),

@@ -1,10 +1,23 @@
 use crate::database::iro;
-use axum::{Extension};
-use sea_orm::{DatabaseConnection, Set};
-use sea_orm::{ActiveModelTrait};
-use sea_orm::entity::prelude::{Date};
+use axum::{
+    extract::{Extension, Json},
+    http::StatusCode,
+};
+use sea_orm::{DatabaseConnection, Set, prelude::Date, ActiveModelTrait};
+use serde::{Serialize, Deserialize};
 
-pub async fn create_iro(Extension(database): Extension<DatabaseConnection>) {
+#[derive(Deserialize)]
+pub struct RequestIro {
+    iro_name: String,
+    iro_phone: Option<String>,
+    iro_zip: Option<String>,
+}
+
+#[axum_macros::debug_handler]
+pub async fn create_iro(
+    Extension(database): Extension<DatabaseConnection>,
+    Json(request_iro): Json<RequestIro> 
+) {
     let new_iro = iro::ActiveModel{ 
         iro_name: Set("Maximus Federal Services".to_owned()),
         iro_email: Set(Some("main@maximus.com".to_owned())),

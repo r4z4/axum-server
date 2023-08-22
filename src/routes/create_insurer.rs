@@ -1,9 +1,23 @@
 use crate::database::insurer;
-use axum::{Extension};
-use sea_orm::{DatabaseConnection, Set};
-use sea_orm::{ActiveModelTrait};
+use axum::{
+    extract::{Extension, Json},
+    http::StatusCode,
+};
+use sea_orm::{DatabaseConnection, Set, prelude::Date, ActiveModelTrait};
+use serde::{Serialize, Deserialize};
 
-pub async fn create_insurer(Extension(database): Extension<DatabaseConnection>) {
+#[derive(Deserialize)]
+pub struct RequestInsurer {
+    insurer_name: String,
+    insurer_phone: Option<String>,
+    insurer_zip: Option<String>,
+}
+
+#[axum_macros::debug_handler]
+pub async fn create_insurer(
+    Extension(database): Extension<DatabaseConnection>,
+    Json(request_insurer): Json<RequestInsurer> 
+) {
     let new_insurer = insurer::ActiveModel{ 
         insurer_name: Set("BCBS".to_owned()),
         insurer_phone: Set(Some("402-111-1111".to_owned())),
