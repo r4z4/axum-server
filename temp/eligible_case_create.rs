@@ -8,16 +8,20 @@ use axum::extract::Path;
 
 
 #[tokio::test]
-async fn insurer_post() -> Result<()> {
+async fn eligible_case_create() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
     let res = hc
         .do_post(
-            "/create_insurer",
+            "/create_eligible_case",
             json!({
-                "insurer_name": "BCBS",
-                "insurer_phone": "402-555-5555",
-                "insurer_phone": "main@bcbs.com"
+                "provider_id": 1,
+                "patient_id": 1,
+                "iro_id": 1,
+                "insurer_id": 1,
+                "denial_reason": "Not Covered by Formulary",
+                "expedited": 1,
+                "date_forwarded": "2023-10-10",
             }),
         )
         .await?;
@@ -26,6 +30,3 @@ async fn insurer_post() -> Result<()> {
 
     Ok(())
 }
-
-
-
