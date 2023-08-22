@@ -1,5 +1,6 @@
-use crate::database::user::{self, Entity as User};
+use crate::database::user::{self, Model, Entity as User};
 use axum::{
+    headers::{authorization::Bearer, Authorization},
     extract::{Extension, Json},
     http::StatusCode,
 };
@@ -17,7 +18,29 @@ pub struct ResponseUser {
     username: String,
     // We'll give them their ID (for now)
     id: i32,
-    token: String,
+    token: Option<String>,
+}
+
+#[axum_macros::debug_handler]
+pub async fn get_all_users(
+    Extension(database): Extension<DatabaseConnection>
+) -> Result<Json<Vec<ResponseUser>>, StatusCode> {
+    let users = User::find()
+        .filter(user::Column::DeletedAt.is_null())
+        // .filter(zip_filter)
+        .all(&database)
+        .await
+        .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?
+        .into_iter()
+        .map(|db_user| ResponseUser {
+            username: db_user.username,
+            id: db_user.user_id,
+            token: Some(db_user.token.unwrap_or_default())
+        })
+        .collect();
+
+    Ok(Json(users))
+
 }
 
 #[axum_macros::debug_handler]
@@ -40,7 +63,7 @@ pub async fn create_user(
      Ok(Json(ResponseUser {
         username: new_user.username.unwrap(), 
         id: new_user.user_id.unwrap(), 
-        token: new_user.token.unwrap().unwrap(), 
+        token: Some(new_user.token.unwrap().unwrap_or_default()),
      }))
 }
 
@@ -65,9 +88,22 @@ pub async fn login(
         Ok(Json(ResponseUser {
             username: saved_user.username.unwrap(),
             id: saved_user.user_id.unwrap(),
-            token: saved_user.token.unwrap().unwrap(),
+            token: Some(saved_user.token.unwrap().unwrap()),
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
     }
+}
+
+pub async fn logout(
+    Extension(database): Extension<DatabaseConnection>,
+    Extension(user): Extension<Model>,
+) -> Result<(), StatusCode> {
+    let mut user = user.into_active_model();
+    user.token = Set(None);
+    user.save(&database)
+        .await
+        .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
+
+    Ok(())
 }

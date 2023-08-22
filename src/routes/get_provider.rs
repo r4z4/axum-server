@@ -18,6 +18,7 @@ pub struct ResponseProvider {
     provider_contact_f_name: Option<String>,
     provider_contact_l_name: Option<String>,
     deleted_at: Option<DateTimeWithTimeZone>,
+    created_by: Option<i32>,
 }
 
 pub async fn get_provider(
@@ -41,6 +42,7 @@ pub async fn get_provider(
             provider_contact_f_name: provider.provider_contact_f_name,
             provider_contact_l_name: provider.provider_contact_l_name,
             deleted_at: provider.deleted_at,
+            created_by: provider.created_by,
         }))
     } else {
         Err(StatusCode::NOT_FOUND)
@@ -82,6 +84,7 @@ pub async fn get_all_providers(
             provider_contact_f_name: db_provider.provider_contact_f_name,
             provider_contact_l_name: db_provider.provider_contact_l_name,
             deleted_at: db_provider.deleted_at,
+            created_by: db_provider.created_by,
         })
         .collect();
 

@@ -38,8 +38,10 @@ mod delete_insurer;
 mod delete_iro;
 mod delete_eligible_case;
 mod users;
+mod guard;
 
 use axum::{
+    middleware,
     routing::{get, post, put, patch, delete},
     Router, body::Body, http::Method, Extension,
 };
@@ -84,7 +86,8 @@ use delete_patient::{delete_patient};
 use delete_insurer::{delete_insurer};
 use delete_iro::{delete_iro};
 use delete_eligible_case::{delete_eligible_case};
-use users::{create_user, login};
+use users::{create_user, login, logout, get_all_users};
+use guard::guard;
 
 #[derive(Clone)]
 pub struct SharedData {
@@ -100,6 +103,8 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
     };
 
     Router::new()
+        .route("/users/logout", post(logout))
+        .route_layer(middleware::from_fn(guard))
         .route("/", get(hello_world))
         .route("/mirror_body_string", post(mirror_body_string))
         .route("/mirror_body_json", post(mirror_body_json))
@@ -153,5 +158,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/get_insurer/:insurer_id", get(get_insurer))
         .route("/get_iros", get(get_all_iros))
         .route("/get_iro/:iro_id", get(get_iro))
+        // Admin
+        .route("/get_users", get(get_all_users))
         .layer(Extension(database))
 }

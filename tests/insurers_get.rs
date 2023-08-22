@@ -56,25 +56,27 @@ struct Insurer {
     insurer_contact_l_name: Option<String>,
 }
 
-#[tokio::test]
-async fn insurer_get_plus_params() -> Result<()> {
-    let hc = httpc_test::new_client("http://localhost:3000")?;
+// // // These assume rather stable records in DB. Disble for now. Re-enable when better data
 
-    let res = hc.get::<Insurer>("/get_insurer/1").await?;
-    assert_eq!(res.insurer_name, "BCBS");
+// #[tokio::test]
+// async fn insurer_get_plus_params() -> Result<()> {
+//     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    Ok(())
-}
+//     let res = hc.get::<Insurer>("/get_insurer/1").await?;
+//     assert_eq!(res.insurer_name, "BCBS");
 
-#[tokio::test]
-async fn insurer_get_plus_params_id() -> Result<()> {
-    let hc = httpc_test::new_client("http://localhost:3000")?;
+//     Ok(())
+// }
 
-    let res = hc.get::<Insurer>("/get_insurer/1").await?;
-    assert_eq!(res.insurer_id, 1);
+// #[tokio::test]
+// async fn insurer_get_plus_params_id() -> Result<()> {
+//     let hc = httpc_test::new_client("http://localhost:3000")?;
 
-    Ok(())
-}
+//     let res = hc.get::<Insurer>("/get_insurer/1").await?;
+//     assert_eq!(res.insurer_id, 1);
+
+//     Ok(())
+// }
 
 
 

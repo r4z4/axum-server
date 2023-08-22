@@ -15,6 +15,7 @@ pub struct Model {
     pub provider_contact_l_name: Option<String>,
     pub provider_phone: Option<String>,
     pub deleted_at: Option<DateTimeWithTimeZone>,
+    pub created_by: Option<i32>,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

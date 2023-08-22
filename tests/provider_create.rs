@@ -8,7 +8,7 @@ use axum::extract::Path;
 
 
 #[tokio::test]
-async fn create_eligible_case() -> Result<()> {
+async fn provider_create() -> Result<()> {
     let hc = httpc_test::new_client("http://localhost:3000")?;
 
     let res = hc

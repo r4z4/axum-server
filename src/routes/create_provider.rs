@@ -1,10 +1,11 @@
 use crate::database::provider;
+use crate::database::user::{self, Entity as User};
 use axum::{
+    headers::{authorization::Bearer, Authorization},
     extract::{Extension, Json},
-    http::StatusCode,
+    http::StatusCode, TypedHeader
 };
-use sea_orm::{DatabaseConnection, Set};
-use sea_orm::{ActiveModelTrait};
+use sea_orm::{DatabaseConnection, Set, ColumnTrait, EntityTrait, ActiveModelTrait, QueryFilter};
 use serde::{Serialize, Deserialize};
 
 #[derive(Deserialize)]
@@ -21,8 +22,22 @@ pub struct RequestProvider {
 #[axum_macros::debug_handler]
 pub async fn create_provider(
     Extension(database): Extension<DatabaseConnection>,
+    authorization: TypedHeader<Authorization<Bearer>>,
     Json(request_provider): Json<RequestProvider> 
-) {
+) -> Result<(), StatusCode> {
+    let token = authorization.token();
+
+    let user = if let Some(user) = User::find()
+        .filter(user::Column::Token.eq(Some(token)))
+        .one(&database)
+        .await
+        .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)? 
+    {
+        user
+    } else {
+        return Err(StatusCode::UNAUTHORIZED);
+    };
+
     let new_provider = provider::ActiveModel{ 
         provider_name: Set(request_provider.provider_name),
         provider_phone: Set(request_provider.provider_phone),
@@ -31,10 +46,11 @@ pub async fn create_provider(
         provider_address_2: Set(request_provider.provider_address_2),
         provider_contact_f_name: Set(request_provider.provider_contact_f_name),
         provider_contact_l_name: Set(request_provider.provider_contact_l_name),
+        created_by: Set(Some(user.user_id)),
         ..Default::default()
      };
 
-     let result = new_provider.save(&database).await.unwrap();
+     let _result = new_provider.save(&database).await.unwrap();
 
-     dbg!(result);
+     Ok(())
 }

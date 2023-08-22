@@ -17,6 +17,7 @@ pub struct RequestProvider {
     pub provider_contact_l_name: Option<String>,
     pub provider_phone: Option<String>,
     pub deleted_at: Option<DateTimeWithTimeZone>,
+    pub created_by: Option<i32>,
 }
 
 pub async fn atomic_update_provider(
@@ -35,6 +36,7 @@ pub async fn atomic_update_provider(
         provider_contact_l_name: Set(request_provider.provider_contact_l_name),
         provider_phone: Set(request_provider.provider_phone),
         deleted_at: Set(request_provider.deleted_at),
+        created_by: Set(request_provider.created_by),
         
     };
 
