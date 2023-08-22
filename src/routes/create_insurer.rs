@@ -11,6 +11,11 @@ pub struct RequestInsurer {
     insurer_name: String,
     insurer_phone: Option<String>,
     insurer_zip: Option<String>,
+    insurer_email: Option<String>,
+    insurer_address_1: Option<String>,
+    insurer_address_2: Option<String>,
+    insurer_contact_f_name: Option<String>,
+    insurer_contact_l_name: Option<String>,
 }
 
 #[axum_macros::debug_handler]
@@ -19,14 +24,14 @@ pub async fn create_insurer(
     Json(request_insurer): Json<RequestInsurer> 
 ) {
     let new_insurer = insurer::ActiveModel{ 
-        insurer_name: Set("BCBS".to_owned()),
-        insurer_phone: Set(Some("402-111-1111".to_owned())),
-        insurer_email: Set(Some("main@bcbs.com".to_owned())),
-        insurer_address_1: Set(Some("7777 Aksarben Ave.".to_owned())),
-        insurer_address_2: Set(Some("Suite 730".to_owned())),
-        insurer_zip: Set(Some("68124".to_owned())),
-        insurer_contact_f_name: Set(Some("Barry".to_owned())),
-        insurer_contact_l_name: Set(Some("Blue".to_owned())),
+        insurer_name: Set(request_insurer.insurer_name),
+        insurer_phone: Set(request_insurer.insurer_phone),
+        insurer_email: Set(request_insurer.insurer_email),
+        insurer_address_1: Set(request_insurer.insurer_address_1),
+        insurer_address_2: Set(request_insurer.insurer_address_2),
+        insurer_zip: Set(request_insurer.insurer_zip),
+        insurer_contact_f_name: Set(request_insurer.insurer_contact_f_name),
+        insurer_contact_l_name: Set(request_insurer.insurer_contact_l_name),
         ..Default::default()
      };
 

@@ -23,9 +23,10 @@ pub async fn create_eligible_case(
     Json(request_eligible_case): Json<RequestEligibleCase> 
 ) {
     // let split: Vec<&str> = request_eligible_case.date_forwarded.split("-").collect();
-    let input_year: i32 = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(0).unwrap_or("2023").parse::<i32>().unwrap();
-    let input_month: u32  = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(1).unwrap_or("1").parse::<u32>().unwrap();
-    let input_day: u32  = request_eligible_case.date_forwarded.as_ref().unwrap().split("-").nth(2).unwrap_or("1").parse::<u32>().unwrap();
+    let default_date = "2024-10-11";
+    let input_year: i32 = request_eligible_case.date_forwarded.as_ref().unwrap_or(&default_date.to_owned()).split("-").nth(0).unwrap().parse::<i32>().unwrap();
+    let input_month: u32  = request_eligible_case.date_forwarded.as_ref().unwrap_or(&default_date.to_owned()).split("-").nth(1).unwrap().parse::<u32>().unwrap();
+    let input_day: u32  = request_eligible_case.date_forwarded.as_ref().unwrap_or(&default_date.to_owned()).split("-").nth(2).unwrap().parse::<u32>().unwrap();
     let new_eligible_case = eligible_case::ActiveModel{ 
         // Some() is for Option<>
         patient_id: Set(request_eligible_case.patient_id),
