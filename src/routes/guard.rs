@@ -1,6 +1,7 @@
 use crate::{
     database::user::{self, Model, Entity as User},
     utils::jwt::{create_jwt, is_valid},
+    utils::app_error::*,
 };
 use axum::{
     headers::{authorization::Bearer, Authorization, HeaderMapExt},
@@ -14,23 +15,23 @@ use sea_orm::{DatabaseConnection, QueryFilter, ColumnTrait, Set, EntityTrait, In
 pub async fn guard<T>(
     mut request: Request<T>,
     next: Next<T>,
-) -> Result<Response, StatusCode> {
+) -> Result<Response, AppError> {
     let token = request.headers().typed_get::<Authorization<Bearer>>()
-        .ok_or(StatusCode::BAD_REQUEST)?
+        .ok_or_else(|| AppError { code: StatusCode::BAD_REQUEST, message: "Missing Bearer Token".to_string() })?
         .token()
         .to_owned();
     let database = request
         .extensions()
         .get::<DatabaseConnection>()
-        .ok_or(StatusCode::INTERNAL_SERVER_ERROR)?;
+        .ok_or_else(|| AppError { code: StatusCode::INTERNAL_SERVER_ERROR, message: "Internal Server Error".to_string() })?;
     let user = User::find()
         .filter(user::Column::Token.eq(Some(token.clone())))
         .one(database)
         .await
-        .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)?;
+        .map_err(|_error| AppError { code: StatusCode::INTERNAL_SERVER_ERROR, message: "Internal Server Error".to_string() })?;
     
     is_valid(&token)?; // Validate token after DB call to obfuscate error type and login times
-    let Some(user) = user else {return Err(StatusCode::UNAUTHORIZED)};
+    let Some(user) = user else {return Err(AppError { code: StatusCode::UNAUTHORIZED, message: "You are not authorized. Please login or create an account.".to_string() })};
 
     request.extensions_mut().insert(user);
 

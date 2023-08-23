@@ -1,6 +1,7 @@
 use crate::{
     database::user::{self, Model, Entity as User},
     utils::jwt::{create_jwt, is_valid},
+    utils::app_error::*,
 };
 use axum::{
     headers::{authorization::Bearer, Authorization},
