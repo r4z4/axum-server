@@ -13,7 +13,7 @@ pub struct Claim {
 pub fn create_jwt() -> Result<String, StatusCode> {
     let mut now = Utc::now();
     let iat = now.timestamp() as usize;
-    let expires_in = Duration::seconds(30);
+    let expires_in = Duration::days(30);
     now += expires_in;
     let exp = now.timestamp() as usize;
     let claim = Claim {exp, iat};
@@ -23,6 +23,15 @@ pub fn create_jwt() -> Result<String, StatusCode> {
         .map_err(|_error| StatusCode::INTERNAL_SERVER_ERROR)
 }
 
-pub fn is_valid() -> Result<bool, StatusCode> {
-    todo!()
+pub fn is_valid(token: &str) -> Result<bool, StatusCode> {
+    let secret: &'static str = dotenv!("JWT_SECRET");
+    let key = DecodingKey::from_secret(secret.as_bytes());
+    decode::<Claim>(token, &key, &Validation::new(Algorithm::HS256))
+        .map_err(|error| {
+            match error.kind() {
+                jsonwebtoken::errors::ErrorKind::ExpiredSignature => StatusCode::UNAUTHORIZED,
+                _ => StatusCode::INTERNAL_SERVER_ERROR,
+            }
+        })?;
+    Ok(true)
 }

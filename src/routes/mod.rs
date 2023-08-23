@@ -104,6 +104,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
 
     Router::new()
         .route("/users/logout", post(logout))
+        .route("/hello", get(hello_world))
         .route_layer(middleware::from_fn(guard))
         .route("/", get(hello_world))
         .route("/mirror_body_string", post(mirror_body_string))

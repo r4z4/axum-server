@@ -6,7 +6,7 @@ use axum::{
     http::StatusCode, TypedHeader
 };
 use sea_orm::{DatabaseConnection, Set, ColumnTrait, EntityTrait, ActiveModelTrait, QueryFilter};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize};
 
 #[derive(Deserialize)]
 pub struct RequestProvider {

@@ -1,17 +1,15 @@
 use crate::database::patient;
 use axum::{
     extract::{Extension, Json},
-    http::StatusCode,
 };
 use sea_orm::{DatabaseConnection, Set, prelude::Date, ActiveModelTrait};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize};
 
 #[derive(Deserialize)]
 pub struct RequestPatient {
     patient_f_name: String,
     patient_l_name: String,
     patient_email: Option<String>,
-    patient_phone: Option<String>,
     patient_zip: Option<String>,
     patient_address_1: Option<String>,
     patient_address_2: Option<String>,

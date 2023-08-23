@@ -1,10 +1,9 @@
 use crate::database::eligible_case;
 use axum::{
     extract::{Extension, Json},
-    http::StatusCode,
 };
 use sea_orm::{DatabaseConnection, Set, prelude::Date, ActiveModelTrait};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize};
 
 #[derive(Deserialize)]
 pub struct RequestEligibleCase {
