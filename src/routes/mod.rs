@@ -114,7 +114,7 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/mirror_user_agent", get(mirror_user_agent))
         .route("/mirror_custom_header", get(mirror_custom_header))
         .route("/middleware_message", get(middleware_message))
-        .layer(cors)
+        // .layer(cors)
         .layer(Extension(shared_data))
         .route("/always_errors", get(always_errors))
         .route("/returns_201", post(returns_201))
@@ -161,5 +161,6 @@ pub fn create_routes(database: DatabaseConnection) -> Router<(), Body> {
         .route("/get_iro/:iro_id", get(get_iro))
         // Admin
         .route("/get_users", get(get_all_users))
+        .layer(cors)
         .layer(Extension(database))
 }
